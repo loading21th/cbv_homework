@@ -1,0 +1,54 @@
+<head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+    {% load staticfiles %}
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+</head>
+
+<body height:100% >
+    <h1>Welcome {{school_name}} school,and my class :{{class_name}}</h1>
+	<div>
+        <input type ='file' name='coursefile' id='file_upload' />
+    	<input type='submit' id='test'  onclick='file_upload("no")' value='Submit'/>
+	</div>
+        <ul class = 'filelist' id='upul'>
+        </ul>
+    </div>
+
+
+<body>
+<script>
+	function file_upload(is_index)
+    {
+        var form_data = new FormData();
+		if (is_index == "no")
+		{
+            var file_name = document.getElementById('file_upload').files[0];
+            form_data.append('filename',file_name);
+		}
+        $.ajax({
+            type:'POST',
+            url :'/lytest/hlsroom/{{school_name}}/{{class_name}}/',
+            data:form_data, 
+            contentType:false,
+            processData:false,
+            mimeType:"multipart/form-data",
+            error:function()
+            {
+                alert('请求失败');
+            },
+            success:function(arg)
+            {
+				val = JSON.parse(arg).Courseware_name;
+				$('#upul').empty();
+				for (var inode=0; inode<val.length; inode++)
+				{
+					$('#upul').append('<li id="upli"><a href="/lytest/hlsroom/download/{{school_name}}/{{class_name}}/'+val[inode]+'/" >'+val[inode]+'</a></li>');	
+				}
+   	        }
+        });
+    }
+	$(document).ready(function()
+		{
+			file_upload("yes");
+		});
+</script>
